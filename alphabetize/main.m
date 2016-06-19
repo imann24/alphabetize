@@ -9,15 +9,39 @@
 #import <Foundation/Foundation.h>
 
 void swap (NSMutableArray * source, int index1, int index2) {
-    NSString * temp = source[0];
-    source[0] = source[1];
-    source[1] = temp;
+
+    NSString * temp = source[index1];
+    source[index1] = source[index2];
+    source[index2] = temp;
+    NSLog(@"Swapping index %d and index %d", index1, index2);
 }
 
 void insertionSort (NSMutableArray * source) {
-    
+    /*
+     for i ← 1 to length(A)-1
+     j ← i
+     while j > 0 and A[j-1] > A[j]
+     swap A[j] and A[j-1]
+     j ← j - 1
+     end while
+     end for
+     */
+    for (int i = 1; i < [source count]; i++) {
+        int j = i;
+        while (j > 0 && [source[j-1] compare:source[j]] == NSOrderedDescending) {
+            swap(source, j-1, j);
+            j--;
+        }
+    }
 }
 
+void removeEmptyElements (NSMutableArray * source) {
+    for (int i = 0; i < [source count]; i++) {
+        if ([source[i] length] == 0) {
+            [source removeObjectAtIndex:i];
+        }
+    }
+}
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
@@ -35,10 +59,9 @@ int main(int argc, const char * argv[]) {
             
             // Adapated from http://stackoverflow.com/questions/4208552/open-file-and-read-from-file-objective-c
             NSString * fileContents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-            NSMutableArray * fileLineByLine = [[fileContents componentsSeparatedByString:@"\n"] mutableCopy];
-            NSLog(fileLineByLine[0]);
-            swap(fileLineByLine, 0, 1);
-            NSLog(fileLineByLine[0]);
+            NSMutableArray * fileByLine = [[fileContents componentsSeparatedByString:@"\n"] mutableCopy];
+            removeEmptyElements(fileByLine);
+            insertionSort(fileByLine);
         } else {
             NSLog(@"Please enter a file name");
         }
